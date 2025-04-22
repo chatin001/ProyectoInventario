@@ -31,6 +31,17 @@ namespace ProyectoInventario
             return _tiposempleados.ToList();
         }
 
+
+
+        public List<Modelos.Empleado> ObtenerEmpleado()
+        {
+            return _empleados.ToList();
+        }
+
+
+
+
+
         //Metodo para obtener un solo empleado  yquiero que sea por Id
         public Modelos.TipoEmpleado ObtenerTipoEmpleadosporId(int id)
         {
