@@ -77,11 +77,7 @@ namespace ProyectoInventario
                 Console.Clear();
                 Console.ForegroundColor = ConsoleColor.White;
 
-                string titulo = "GESTIÓN DE EMPLEADOS";
-
-                Console.WriteLine(titulo);
-
-
+                Console.WriteLine("********** GESTIÓN DE EMPLEADOS **********");
 
                 Console.WriteLine("\n  MENU DE EMPLEADOS\n");
 
