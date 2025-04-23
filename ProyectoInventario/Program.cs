@@ -55,7 +55,9 @@ namespace ProyectoInventario
                             salir = true;
                             break;
                         default:
-                             Console.WriteLine("Opcion invalida");
+                            Console.WriteLine("Opcion invalida");
+                            Console.ReadKey();
+                            Console.Clear();
                             break;
                     }
                 }
@@ -64,7 +66,7 @@ namespace ProyectoInventario
                     Console.WriteLine(ex.Message);
                 }
             }
-        
+
         }
 
         //***************************************************************//
@@ -92,36 +94,38 @@ namespace ProyectoInventario
 
                 try
                 {
-                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    //ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    int tecla = int.Parse(Console.ReadLine());
 
-                    switch (tecla.KeyChar)
+                    switch (tecla)
                     {
-                        case '1':
+                        case 1:
                             AgregarEmpleado(sistema);
                             break;
-                        case '2':
+                        case 2:
                             BuscarEmpleado(sistema);
                             break;
-                        case '3':
+                        case 3:
                             ListarEmpleados(sistema);
                             break;
-                        case '4':
+                        case 4:
                             //ModificarEmpleado(sistema);
                             break;
-                        case '5':
+                        case 5:
                             // CambiarEstadoEmpleado(sistema);
                             break;
-                        case '6':
+                        case 6:
                             //GestionTiposEmpleado(sistema);
                             break;
-                        case '0':
+                        case 0:
                             volver = true;
                             break;
                         default:
                             Console.WriteLine("Opcion invalida");
+                            Console.ReadKey();
                             break;
                     }
-                } 
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
@@ -135,12 +139,12 @@ namespace ProyectoInventario
         static void AgregarEmpleado(SistemaInventario sistema)
         {
             Console.Clear();
-       
+
             Console.WriteLine("\n  AGREGAR NUEVO EMPLEADO\n");
 
             try
             {
-              
+
                 // Solicita datos del empleado
                 Console.WriteLine("\n  Ingrese los siguientes datos:\n");
 
@@ -170,7 +174,7 @@ namespace ProyectoInventario
 
                 var tipoEmpleado = sistema.ObtenerTipoEmpleadosporId(tipoId);
 
-              
+
 
                 if (tipoEmpleado == null)
                 {
@@ -200,7 +204,7 @@ namespace ProyectoInventario
 
 
                 Console.WriteLine("\n  Estado:");
-               // int estado = int.Parse(Console.ReadLine());
+                // int estado = int.Parse(Console.ReadLine());
 
                 Console.WriteLine("  [1] Activo");
                 Console.WriteLine("  [2] Inactivo");
@@ -225,14 +229,15 @@ namespace ProyectoInventario
 
                 sistema.AgregarEmpleado(empleado);
 
-               // MostrarMensajeExito($"Empleado '{nombre}' agregado correctamente con ID: {empleado.Id}");
+
 
                 Console.WriteLine("\n  Presione cualquier tecla para volver...");
                 Console.ReadKey();
             }
             catch (Exception ex)
             {
-                Console.Write("  Seleccione una opción: ");
+                Console.Write(ex.Message);
+                Console.ReadKey();
             }
         }
 
@@ -242,68 +247,80 @@ namespace ProyectoInventario
             Console.Clear();
             Console.WriteLine("\n  LISTA DE EMPLEADOS\n");
 
-            var empleados = sistema.ObtenerEmpleado();
-
-            if (empleados.Count == 0)
+            try
             {
-                Console.WriteLine("\n  No hay empleados registrados en el sistema.");
-            }
-            else
-            {
-                // Opciones de filtrado
-                Console.WriteLine("\n  Filtros:");
-                Console.WriteLine("  [1] Todos los empleados");
-                Console.WriteLine("  [2] Solo empleados activos");
-                Console.WriteLine("  [3] Solo empleados inactivos");
-                Console.Write("\n  Seleccione un filtro: ");
-
-                ConsoleKeyInfo tecla = Console.ReadKey(true);
-                Console.WriteLine(tecla.KeyChar);
 
 
-                List<Empleado> filtrados;
+                var empleados = sistema.ObtenerEmpleado();
 
-                switch (tecla.KeyChar)
+                if (empleados.Count == 0)
                 {
-                    case '1':
-                        filtrados = empleados;
-                        break;
-                    case '2':
-                        filtrados = empleados.Where(e => e.Estado == EstadoEmpleado.ACTIVO).ToList();
-                        break;
-                    case '3':
-                        filtrados = empleados.Where(e => e.Estado != EstadoEmpleado.INACTIVO).ToList();
-                        break;
-                    default:
-                        filtrados = empleados;
-                        break;
+                    Console.WriteLine("\n  No hay empleados registrados en el sistema.");
                 }
-
-                // Mostrar tabla de empleados
-                MostrarTablaEmpleados(filtrados);
-
-                static void MostrarTablaEmpleados(List<Empleado> empleados)
+                else
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine("\n  ID | Nombre | Tipo | Estado | Fecha Ingreso | Edad | Género");
-                    Console.WriteLine("  " + new string('-', 80));
+                    // Opciones de filtrado
+                    Console.WriteLine("\n  Filtros:");
+                    Console.WriteLine("  [1] Todos los empleados");
+                    Console.WriteLine("  [2] Solo empleados activos");
+                    Console.WriteLine("  [3] Solo empleados inactivos");
+                    Console.Write("\n  Seleccione un filtro: ");
 
-                    Console.ForegroundColor = ConsoleColor.White;
-                    foreach (var emp in empleados)
+                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    Console.WriteLine(tecla.KeyChar);
+
+
+                    List<Empleado> filtrados;
+
+                    switch (tecla.KeyChar)
                     {
-                        // Colorear según estado
-                        if (emp.Estado == EstadoEmpleado.ACTIVO)
-                            Console.ForegroundColor = ConsoleColor.Green;
-                        else if (emp.Estado == EstadoEmpleado.INACTIVO)
-                            Console.ForegroundColor = ConsoleColor.Yellow;
-                        else
-                            Console.ForegroundColor = ConsoleColor.Red;
-
-                        Console.WriteLine($"  {emp.Id} | {emp.Nombres} | {emp.TipoEmpleados.Nombres} | {emp.Estado} | {emp.FechaIngreso.ToShortDateString()} | {emp.Edad} | {emp.Genero}");
+                        case '1':
+                            filtrados = empleados;
+                            break;
+                        case '2':
+                            filtrados = empleados.Where(e => e.Estado == EstadoEmpleado.ACTIVO).ToList();
+                            break;
+                        case '3':
+                            filtrados = empleados.Where(e => e.Estado != EstadoEmpleado.INACTIVO).ToList();
+                            break;
+                        default:
+                            filtrados = empleados;
+                            break;
                     }
 
-                    Console.ReadKey();
+                    // Mostrar tabla de empleados
+                    MostrarTablaEmpleados(filtrados);
+
+                    static void MostrarTablaEmpleados(List<Empleado> empleados)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine("\n  ID | Nombre | Tipo | Estado | Fecha Ingreso | Edad | Género");
+                        Console.WriteLine("  " + new string('-', 80));
+
+                        Console.ForegroundColor = ConsoleColor.White;
+                        foreach (var emp in empleados)
+                        {
+                            // Colorear según estado
+                            if (emp.Estado == EstadoEmpleado.ACTIVO)
+                                Console.ForegroundColor = ConsoleColor.Green;
+                            else if (emp.Estado == EstadoEmpleado.INACTIVO)
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                            else
+                                Console.ForegroundColor = ConsoleColor.Red;
+
+                            Console.WriteLine($"  {emp.Id} | {emp.Nombres} | {emp.TipoEmpleados.Nombres} | {emp.Estado} | {emp.FechaIngreso.ToShortDateString()} | {emp.Edad} | {emp.Genero}");
+                        }
+
+                        Console.ReadKey();
+                    }
                 }
+
+                Console.WriteLine("\n  Presione cualquier tecla para volver...");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
             }
 
         }
@@ -416,7 +433,7 @@ namespace ProyectoInventario
             var empleado1 = new Empleado
             {
                 Nombres = "Juan Manuel",
-                TipoEmpleados = tipoAdmin ,
+                TipoEmpleados = tipoAdmin,
                 Estado = EstadoEmpleado.ACTIVO,
                 FechaIngreso = DateTime.Now,
                 Edad = 52,
@@ -429,7 +446,7 @@ namespace ProyectoInventario
             {
                 Nombres = "Carlos Ramos",
                 TipoEmpleados = tipoVendedor,
-                Estado = EstadoEmpleado.ACTIVO,
+                Estado = EstadoEmpleado.INACTIVO,
                 FechaIngreso = DateTime.Now,
                 Edad = 26,
                 Genero = Genero.MASCULINO,
@@ -437,8 +454,9 @@ namespace ProyectoInventario
                 FechaModificacion = DateTime.Now,
             };
 
-
             sistema.AgregarEmpleado(empleado1);
+            sistema.AgregarEmpleado(empleado2);
+
             Console.WriteLine("Empleado");
 
         }
