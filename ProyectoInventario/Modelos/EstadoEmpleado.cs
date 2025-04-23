@@ -4,7 +4,7 @@
 
     {
         ACTIVO,
-        INACIVO,
+        INACTIVO,
 
     }
 }

@@ -32,6 +32,11 @@ namespace ProyectoInventario
         }
 
 
+        public Empleado ObtenerEmpleadoPorId(int id) 
+        {
+            return _empleados.FirstOrDefault(t => t.Id == id);
+        }
+
 
         public List<Modelos.Empleado> ObtenerEmpleado()
         {

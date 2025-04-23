@@ -100,7 +100,7 @@ namespace ProyectoInventario
                             AgregarEmpleado(sistema);
                             break;
                         case '2':
-                            //BuscarEmpleado(sistema);
+                            BuscarEmpleado(sistema);
                             break;
                         case '3':
                             ListarEmpleados(sistema);
@@ -129,7 +129,6 @@ namespace ProyectoInventario
                 }
             }
         }
-
 
         //***************************************
 
@@ -198,6 +197,20 @@ namespace ProyectoInventario
                 int generoOp = int.Parse(Console.ReadLine());
                 Genero genero = (generoOp == 1) ? Genero.MASCULINO : Genero.FEMENINO;
 
+
+
+                Console.WriteLine("\n  Estado:");
+               // int estado = int.Parse(Console.ReadLine());
+
+                Console.WriteLine("  [1] Activo");
+                Console.WriteLine("  [2] Inactivo");
+                Console.Write("  Seleccione una opción: ");
+
+                int estadoOp = int.Parse(Console.ReadLine());
+                EstadoEmpleado Estado = (estadoOp == 1) ? EstadoEmpleado.ACTIVO : EstadoEmpleado.INACTIVO;
+
+
+
                 // Crear el empleado
                 var empleado = new Empleado
                 {
@@ -233,7 +246,6 @@ namespace ProyectoInventario
 
             if (empleados.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n  No hay empleados registrados en el sistema.");
             }
             else
@@ -248,6 +260,7 @@ namespace ProyectoInventario
                 ConsoleKeyInfo tecla = Console.ReadKey(true);
                 Console.WriteLine(tecla.KeyChar);
 
+
                 List<Empleado> filtrados;
 
                 switch (tecla.KeyChar)
@@ -259,49 +272,134 @@ namespace ProyectoInventario
                         filtrados = empleados.Where(e => e.Estado == EstadoEmpleado.ACTIVO).ToList();
                         break;
                     case '3':
-                        filtrados = empleados.Where(e => e.Estado != EstadoEmpleado.INACIVO).ToList();
+                        filtrados = empleados.Where(e => e.Estado != EstadoEmpleado.INACTIVO).ToList();
                         break;
                     default:
                         filtrados = empleados;
                         break;
                 }
 
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("\n  ID | Nombre | Tipo | Estado | Fecha Ingreso | Edad");
-               // Console.WriteLine("  " + new string('-', 60));
+                // Mostrar tabla de empleados
+                MostrarTablaEmpleados(filtrados);
 
-                Console.ForegroundColor = ConsoleColor.White;
-                foreach (var emp in filtrados)
+                static void MostrarTablaEmpleados(List<Empleado> empleados)
                 {
-                    // Colorear según estado
-                    if (emp.Estado == EstadoEmpleado.ACTIVO)
-                        Console.ForegroundColor = ConsoleColor.Green;
-                    else if (emp.Estado == EstadoEmpleado.INACIVO)
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                    else
-                        Console.ForegroundColor = ConsoleColor.Red;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine("\n  ID | Nombre | Tipo | Estado | Fecha Ingreso | Edad | Género");
+                    Console.WriteLine("  " + new string('-', 80));
 
-                    Console.WriteLine($"  {emp.Id} | {emp.Nombres} | {emp.TipoEmpleados.Nombres} | {emp.Estado} | {emp.FechaIngreso.ToShortDateString()} | {emp.Edad}");
-                }
+                    Console.ForegroundColor = ConsoleColor.White;
+                    foreach (var emp in empleados)
+                    {
+                        // Colorear según estado
+                        if (emp.Estado == EstadoEmpleado.ACTIVO)
+                            Console.ForegroundColor = ConsoleColor.Green;
+                        else if (emp.Estado == EstadoEmpleado.INACTIVO)
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                        else
+                            Console.ForegroundColor = ConsoleColor.Red;
 
-                // Estadísticas
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("\n  ESTADÍSTICAS:");
-                Console.WriteLine($"  Total de empleados: {empleados.Count}");
-                Console.WriteLine($"  Empleados activos: {empleados.Count(e => e.Estado == EstadoEmpleado.ACTIVO)}");
-                Console.WriteLine($"  Empleados inactivos: {empleados.Count(e => e.Estado == EstadoEmpleado.INACIVO)}");
- 
-                // Por tipo
-                Console.WriteLine("\n  POR TIPO DE EMPLEADO:");
-                var tiposEmpleado = sistema.ObtenerTipoEmpleados();
-                foreach (var tipo in tiposEmpleado)
-                {
-                    int cantidadPorTipo = empleados.Count(e => e.TipoEmpleados.Id == tipo.Id);
-                    Console.WriteLine($"  {tipo.Nombres}: {cantidadPorTipo}");
+                        Console.WriteLine($"  {emp.Id} | {emp.Nombres} | {emp.TipoEmpleados.Nombres} | {emp.Estado} | {emp.FechaIngreso.ToShortDateString()} | {emp.Edad} | {emp.Genero}");
+                    }
+
+                    Console.ReadKey();
                 }
+            }
+
         }
 
+
+
+        static void BuscarEmpleado(SistemaInventario sistema)
+        {
+            Console.Clear();
+            Console.WriteLine("\n  BUSCAR EMPLEADO\n");
+
+            try
+            {
+                Console.WriteLine("  [1] Buscar por ID");
+                Console.WriteLine("  [2] Buscar por Nombre");
+                int opcion = LeerEntero("\n  Seleccione una opción: ");
+
+                Empleado empleado = null;
+
+                if (opcion == 1)
+                {
+                    int id = LeerEntero("  Ingrese el ID del empleado: ");
+                    empleado = sistema.ObtenerEmpleadoPorId(id);
+                }
+                else if (opcion == 2)
+                {
+                    string nombre = LeerTexto("  Ingrese el nombre del empleado: ");
+                    var empleados = sistema.ObtenerEmpleado().Where(e => e.Nombres.ToLower().Contains(nombre.ToLower())).ToList();
+
+                    if (empleados.Count > 1)
+                    {
+                        Console.WriteLine("\n  Se encontraron varios empleados:");
+                        foreach (var emp in empleados)
+                        {
+                            Console.WriteLine($"  [{emp.Id}] {emp.Nombres}");
+                        }
+                        int id = LeerEntero("\n  Seleccione el ID específico: ");
+                        empleado = sistema.ObtenerEmpleadoPorId(id);
+                    }
+                    else if (empleados.Count == 1)
+                    {
+                        empleado = empleados[0];
+                    }
+                }
+
+                if (empleado != null)
+                {
+                    MostrarDetalleEmpleado(empleado);
+                }
+                else
+                {
+                    Console.WriteLine("  No se encontró ningún empleado con esos criterios.");
+                }
+
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                Console.Write("  Seleccione una opción: ");
+            }
         }
+
+        static string LeerTexto(string prompt)
+        {
+            Console.Write(prompt);
+            return Console.ReadLine();
+        }
+
+        static void MostrarDetalleEmpleado(Empleado empleado)
+        {
+            Console.Clear();
+            Console.WriteLine($"\n  DETALLE DEL EMPLEADO - ID: {empleado.Id}\n");
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"  Nombre: {empleado.Nombres}");
+            Console.WriteLine($"  Tipo: {empleado.TipoEmpleados.Nombres}");
+            Console.WriteLine($"  Estado: {empleado.Estado}");
+            Console.WriteLine($"  Fecha de Ingreso: {empleado.FechaIngreso.ToShortDateString()}");
+            Console.WriteLine($"  Edad: {empleado.Edad}");
+            Console.WriteLine($"  Género: {empleado.Genero}");
+            Console.WriteLine($"  Fecha de Creación: {empleado.FechaCreacion}");
+            Console.ForegroundColor = ConsoleColor.Gray;
+        }
+
+
+        static int LeerEntero(string prompt)
+        {
+            Console.Write(prompt);
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out int valor))
+            {
+                return valor;
+            }
+            throw new FormatException("Debe ingresar un número válido.");
+        }
+
 
         static void CargarDatosIniciales(SistemaInventario sistema)
         {
